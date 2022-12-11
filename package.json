@@ -1,0 +1,29 @@
+{
+  "name": "notify-server",
+  "version": "1.0.0",
+  "description": "Server application to notify clients",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiagofleal/notify-server.git"
+  },
+  "keywords": [
+    "sse",
+    "notify",
+    "push-notifications",
+    "notifications"
+  ],
+  "author": "Thiago Fernandes Leal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thiagofleal/notify-server/issues"
+  },
+  "homepage": "https://github.com/thiagofleal/notify-server#readme",
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  }
+}
