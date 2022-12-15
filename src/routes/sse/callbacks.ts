@@ -1,20 +1,29 @@
 import { Response } from "express";
 import { Notification, SseNotifier } from "../../notifier";
 
-export function getEvents(id: string, retry: number, response: Response): void {
-  response.setHeader("Content-Type", "text/event-stream");
-  response.setHeader("Cache-Control", "no-cache");
-  response.setHeader("Connection", "keep-alive");
-  response.flushHeaders();
-  response.write(`retry: ${ retry }\r\n\n`);
+export function getEvents(project: string, id: string, retry: number, response: Response): void {
+  const notifier = SseNotifier.get(project, id);
 
-  const registData = SseNotifier.get(id).register(response);
-
-  response.on("close", () => registData.unregister());
-  response.on("error", () => registData.unregister());
-  response.on("finish", () => registData.unregister());
+  if (notifier) {
+    response.setHeader("Content-Type", "text/event-stream");
+    response.setHeader("Cache-Control", "no-cache");
+    response.setHeader("Connection", "keep-alive");
+    response.flushHeaders();
+    response.write(`retry: ${ retry }\r\n\n`);
+  
+    const registData = notifier.registerConnection(response);
+  
+    response.on("close", () => registData?.unregister());
+    response.on("error", () => registData?.unregister());
+    response.on("finish", () => registData?.unregister());
+  } else {
+    response.status(404).send({
+      error: 1,
+      message: "Project or ID not found"
+    })
+  }
 }
 
-export function notify(id: string, notification: Notification): void {
-  SseNotifier.get(id).notify(notification);
+export function notify(project: string, id: string, notification: Notification): void {
+  SseNotifier.get(project, id)?.notify(notification);
 }

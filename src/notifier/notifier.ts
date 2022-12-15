@@ -8,13 +8,16 @@ export type RegisterConnectionData = {
 };
 
 export class SseNotifier {
-  private static instance: Record<string, SseNotifier> = {};
+  private static instance: Record<string, Record<string, SseNotifier>> = {};
 
-  public static get(id: string): SseNotifier {
-    if (!this.instance[id]) {
-      this.instance[id] = new this();
+  public static get(project: string, id: string): SseNotifier | null {
+    if (!this.instance[project]) {
+      return null;
     }
-    return this.instance[id];
+    if (!this.instance[project][id]) {
+      this.instance[project][id] = new this();
+    }
+    return this.instance[project][id];
   }
 
   private notificationsRecord: Record<number, Notification> = {};
@@ -42,7 +45,13 @@ export class SseNotifier {
 
   private constructor() {}
 
-  public register(connection: Response): RegisterConnectionData {
+  public static registerProject(project: string): void {
+    if (!this.instance[project]) {
+      this.instance[project] = {};
+    }
+  }
+
+  public registerConnection(connection: Response): RegisterConnectionData {
     const index = this.nextConnectionIndex++;
     this.connectionsRecord[index] = connection;
     this.sendNotifications();
