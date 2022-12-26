@@ -10,14 +10,14 @@ export type RegisterConnectionData = {
 export class SseNotifier {
   private static instance: Record<string, Record<string, SseNotifier>> = {};
 
-  public static get(project: string, id: string): SseNotifier | null {
+  public static get(project: string, session: string): SseNotifier | null {
     if (!this.instance[project]) {
       return null;
     }
-    if (!this.instance[project][id]) {
-      this.instance[project][id] = new this();
+    if (!this.instance[project][session]) {
+      this.instance[project][session] = new this();
     }
-    return this.instance[project][id];
+    return this.instance[project][session];
   }
 
   private notificationsRecord: Record<number, Notification> = {};

@@ -24,6 +24,8 @@ export function getEvents(project: string, id: string, retry: number, response: 
   }
 }
 
-export function notify(project: string, id: string, notification: Notification): void {
-  SseNotifier.get(project, id)?.notify(notification);
+export function notify(project: string, notification: Notification): void {
+  if (notification.where?.["session"]) {
+    SseNotifier.get(project, notification.where?.["session"])?.notify(notification);
+  }
 }
