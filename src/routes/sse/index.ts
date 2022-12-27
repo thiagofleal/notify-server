@@ -1,9 +1,33 @@
 import { Router } from "express";
 import { Notification } from "../../notifier";
-import { getEvents, notify } from "./callbacks";
+import { getEvents, notify, registerProject } from "./callbacks";
 import { generateSession } from "./utils";
 
 const router = Router();
+
+router.post("/register", (request, response) => {
+  const project = request.body.project as string;
+  const authUrl = request.body.authUrl as string | undefined;
+
+  if (project) {
+    if (registerProject(project, authUrl)) {
+      response.status(200).send({
+        error: 0,
+        message: `Project "${ project }" registered successfully`
+      });
+    } else {
+      response.status(400).send({
+        error: 1,
+        message: `Failed to register project "${ project }"`
+      });
+    }
+  } else {
+    response.status(400).send({
+      error: 1,
+      message: "Project name not informed"
+    });
+  }
+});
 
 router.get("/:project/notifications", (request, response) => {
   const querySession = request.query.session as string;

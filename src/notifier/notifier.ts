@@ -8,18 +8,6 @@ export type RegisterConnectionData = {
 };
 
 export class SseNotifier {
-  private static instance: Record<string, Record<string, SseNotifier>> = {};
-
-  public static get(project: string, session: string): SseNotifier | null {
-    if (!this.instance[project]) {
-      return null;
-    }
-    if (!this.instance[project][session]) {
-      this.instance[project][session] = new this();
-    }
-    return this.instance[project][session];
-  }
-
   private notificationsRecord: Record<number, Notification> = {};
   private connectionsRecord: Record<number, Response> = {};
   private nextNotificationIndex = 1;
@@ -43,12 +31,12 @@ export class SseNotifier {
     return ret;
   }
 
-  private constructor() {}
+  constructor(
+    private auth = true
+  ) {}
 
-  public static registerProject(project: string): void {
-    if (!this.instance[project]) {
-      this.instance[project] = {};
-    }
+  public setAuth(value: boolean): void {
+    this.auth = value;
   }
 
   public registerConnection(connection: Response): RegisterConnectionData {
@@ -81,6 +69,9 @@ export class SseNotifier {
 
   private sendNotifications(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
+      if (!this.auth) {
+        return resolve(false);
+      }
       const connections = this.connections;
       let ret = false;
 

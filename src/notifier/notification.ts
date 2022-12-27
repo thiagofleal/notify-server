@@ -3,5 +3,5 @@ export type Notification = {
   event?: string;
   expires?: number;
   data: Record<string, any>;
-  where: Record<string, any>;
+  where?: Record<string, any>;
 };
